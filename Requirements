@@ -1,0 +1,45 @@
+
+Requirements
+Frontend:
+
+ Create a form with fields - Publication Title, Abstract,Description, Primary Author,
+ Secondary Author, Publication Date, url, ISBN, Name and email of person submitting publication.
+Option to upload publication file and upload cover picture for publication
+Submit the form and send confirmation email for submission
+
+Backend
+
+In backend side, admin should be able to login and see submission requests
+Admin should have option to view the request, approve the request, decline the request
+Approved request will add the publications and details to the database.
+Admin can view list of approved publications
+Admin can view list of rejected publications
+Admin should be able to modify the submission details for example, abstract or description,
+etc before approving or rejecting the submission.
+
+
+Queries:
+
+Do you have any preference for a frontend framework? No preferences for frontend
+Should I create a signup for admin? or should I seed admin users? Yes, if time permits.
+Do I need to create a signup/sign-in feature for people who are submitting publications? No sign up for users submitting.
+Should I send an email to the publisher when the admin makes changes in the publication? No not for now
+Is it okay if I use cloud storage for images and files? I was thinking of using Cloudinary for storing a
+cover picture and files of the publication. Can you use AWS s3 to store the files in bucket? If not Cloudinary is fine.
+In the publication, there is an option to provide an URL as well publication file. Are these both compulsory fields?
+or user have an option to either provide the link to the publication file or directly upload a file for approval?
+It is either or. Sometimes publications are hosted/published on Google scholar and other similar platforms so they can
+share those url.
+I am also adding basic validations for fields. Could you please let me know which fields are compulsory? Secondary Author,
+URL, ISBN, and publication upload if URL is there.
+In the confirmation email, Should I send a publication file if it is present? Just send a confirmation email with a reference no.
+You have also mentioned that "Approved request will add the publications and details to the database.". Do you want me
+to create publications(index) page where users can see all the approved publications available on site? Could you please
+explain this part?  Yes, please create an index page where all the approved publications are listed publicly. On the same
+page on top right, you can give a button to submit a new publication. And on that page user will enter all publication
+related details.
+Do you want to me send one more email to the user when the request either gets approved or rejected?  No not required.
+Only confirmation email for submission with submission details is enough.
+
+Submission/approval date is different from Date of publication. As it is possible publication was published years ago.
+
