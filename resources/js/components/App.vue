@@ -1,9 +1,18 @@
 <template>
   <div class='publicationListContainer'>
-    <div class='heading'>
-      <h1 id='title'>Publication Submission Approval App</h1>
-    </div>
-    <list-publications :publications='publications' />
+    <br>
+    <b-row align-v="center">
+      <b-col class="text-right">
+        <b-button to="/add_publication" variant="outline-success" size="sm">Submit New Publication</b-button>
+      </b-col>
+    </b-row>
+
+    <b-row>
+      <b-col>
+        <list-publications :publications='publications' />
+      </b-col>
+    </b-row>
+
   </div>
 </template>
 

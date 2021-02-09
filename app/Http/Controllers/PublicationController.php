@@ -6,93 +6,62 @@ use App\Models\Publication;
 use Illuminate\Http\Request;
 use App\Mail\PublicationSubmitted;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class PublicationController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        // if(user is logged in) {
-        //   all
-        // } else {
-        //   approved
-        // }
-        $publications = Publication::orderBy('created_at', 'DESC')->get();
-        return response($publications->jsonSerialize(), 200);
+    public function index() {
+      // if(user is logged in) {
+      //   all
+      // } else {
+      //   approved
+      // }
+      $publications = Publication::orderBy('created_at', 'DESC')->get();
+      return response($publications->jsonSerialize(), 200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    // public function create()
-    // {
-    //     //
-    // }
+    public function store(Request $request) {
+      if ($request->hasFile('cover_image')) {
+        $file = $request->file('cover_image');
+        $coverFilePath = Storage::disk('s3')->put(
+          'covers/'. time() . '-'. $file->getClientOriginalName(), // file name with location
+          $file
+        );
+      }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-      //
-      // dd($request->publication['title']);
-      // dd($request->input('publication.title'));
-      // $input = $request->only(['publication.title', 'publication.abstract']);
-      // dd($input);
-      // $newPublication = new Publication;
-      // $newPublication->title = $request->publication['title'];
-      // $newPublication->save();
+      if ($request->hasFile('publication_file')) {
+        $file = $request->file('publication_file');
+        $filePath = Storage::disk('s3')->put(
+          'files/'. time() . '-'. $file->getClientOriginalName(), // file name with location
+          $file
+        );
+      }
 
       $validatedAttributes = $request->validate([
-        'publication.title' => ["required", 'string'],
-        'publication.abstract' => ["required", 'string'],
-        'publication.description' => ["required", 'string'],
-        'publication.primary_author' => ["required", 'string'],
-        'publication.secondary_author' => ["nullable", 'string'],
-        'publication.published_at' => ["nullable", 'date'],
-        'publication.url' => ["nullable", 'string'],
-        'publication.isbn' => ["nullable", 'string'],
-        'publication.name' => ["required", 'string'],
-        'publication.email' => ["required", 'email'],
-        // 'publication.publication_file' => ['required_if:url,null'],
-        'publication.cover_image' => ["required", 'max:255']
-      ])['publication'];
-      // 'photo' => 'mimes:jpg,bmp,png'
-      // 'video' => 'mimetypes:video/avi,video/mpeg,video/quicktime' -> file
+        'title' => ["required", 'string'],
+        'abstract' => ["required", 'string'],
+        'description' => ["required", 'string'],
+        'primary_author' => ["required", 'string'],
+        'secondary_author' => ["nullable", 'string'],
+        'published_at' => ["nullable", 'date'],
+        'url' => ["nullable", 'string'],
+        'isbn' => ["nullable", 'string'],
+        'name' => ["required", 'string'],
+        'email' => ["required", 'email'],
+        'publication_file' => ['required_if:url,null'],
+        'cover_image' => ["required", 'max:255']
+      ]);
 
-      // $errors = $validator->errors();
-      // dd($errors->first());
-
-      // dd($validatedAttributes);
-      // dd($request->publication);
-
+      $validatedAttributes['cover_image'] = $coverFilePath;
+      $validatedAttributes['publication_file'] = $filePath;
       $newPublication = Publication::create($validatedAttributes);
 
       Mail::to($newPublication->email)->send(new PublicationSubmitted($newPublication));
 
-      return response($newPublication->jsonSerialize(), 201);
-      return response()->json($newPublication, 201);
-      // return response()->json([
-      //   "message" => "student record created"
-      // ], 201);
+      return response($newPublication, 201);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Publication  $publication
-     * @return \Illuminate\Http\Response
-     */
-    // public function show(Publication $publication)
     public function show($id)
     {
       if (!Publication::where('id', $id)->exists()) {
@@ -100,31 +69,15 @@ class PublicationController extends Controller
           "message" => "Publication not found"
         ], 404);
       }
-      $publication = Publication::where('id', $id)->get();
+      $publication = Publication::where('id', $id)->first();
+      $publication->current_user = true;
+      $publication->temp_cover = Storage::disk('s3')->temporaryUrl($publication->cover_image, now()->addMinutes(10));
+      if($publication->publication_file)
+        $publication->temp_file = Storage::disk('s3')->temporaryUrl($publication->publication_file, now()->addMinutes(10));
       return response($publication, 200);
-      // return $publication;
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Publication  $publication
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Publication $publication)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Publication  $publication
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Publication $publication) {
-    // public function update(Request $request, $id) {
+    public function update(Request $request, $id) {
       if (!Publication::where('id', $id)->exists()) {
         return response()->json([
           "message" => "publication not found"
@@ -132,9 +85,6 @@ class PublicationController extends Controller
       }
 
       $publication = Publication::find($id);
-      // $publication->title = is_null($request->title) ? $publication->title : $request->title;
-      // $publication->abstract = is_null($request->abstract) ? $publication->abstract : $request->abstract;
-      // $publication->save();
 
       $validatedAttributes = $request->validate([
         'publication.title' => ["required", 'string'],
@@ -147,31 +97,15 @@ class PublicationController extends Controller
         'publication.isbn' => ["nullable", 'string'],
         'publication.name' => ["required", 'string'],
         'publication.email' => ["required", 'email'],
-        // 'publication.publication_file' => ['required_if:url,null'],
+        'publication.publication_file' => ['required_if:url,null'],
         'publication.cover_image' => ["required", 'max:255']
       ])['publication'];
 
       $publication::update($validatedAttributes);
-      // return $publication;
       return response()->json($publication, 200);
-      // return response()->json([
-      //   "message" => "records updated successfully"
-      // ], 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Publication  $publication
-     * @return \Illuminate\Http\Response
-     */
-    // public function destroy(Publication $publication)
-    // {
-    //     //
-    // }
-
     public function approve(Publication $publication) {
-      // $publication->approve(true);
       $publication->approve = true;
       $publication->save();
 
@@ -181,7 +115,6 @@ class PublicationController extends Controller
     }
 
     public function reject(Publication $publication) {
-      // $publication->reject(false);
       $publication->approve = false;
       $publication->save();
       return response()->json([

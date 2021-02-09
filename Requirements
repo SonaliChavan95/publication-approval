@@ -20,7 +20,6 @@ etc before approving or rejecting the submission.
 
 Queries:
 
-Do you have any preference for a frontend framework? No preferences for frontend
 Should I create a signup for admin? or should I seed admin users? Yes, if time permits.
 Do I need to create a signup/sign-in feature for people who are submitting publications? No sign up for users submitting.
 Should I send an email to the publisher when the admin makes changes in the publication? No not for now
@@ -42,4 +41,3 @@ Do you want to me send one more email to the user when the request either gets a
 Only confirmation email for submission with submission details is enough.
 
 Submission/approval date is different from Date of publication. As it is possible publication was published years ago.
-

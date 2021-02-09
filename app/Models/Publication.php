@@ -12,5 +12,5 @@ class Publication extends Model
     protected $fillable = [
       'title', 'abstract', 'description', 'primary_author',
       'secondary_author', 'published_at', 'url', 'isbn', 'name',
-      'email', 'cover_image'];
+      'email', 'cover_image', 'publication_file'];
 }

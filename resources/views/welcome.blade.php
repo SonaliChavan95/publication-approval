@@ -21,14 +21,39 @@
         </style>
     </head>
     <body>
-      <div id='app'>
-        <!-- <home></home> -->
+      <b-container id='app'>
+        <b-navbar toggleable="sm" type="light" variant="light">
+      <b-navbar-toggle target="nav-text-collapse"></b-navbar-toggle>
+
+      <b-navbar-brand>Publications Submission Approval App</b-navbar-brand>
+
+      <b-navbar-nav class="ml-auto">
+
+        <b-nav-item to="/" exact-path>Home</b-nav-item>
+
+        <b-nav-item-dropdown right>
+          <!-- Using 'button-content' slot -->
+          <template #button-content>
+            <em>User</em>
+          </template>
+          <b-dropdown-item href="#">Profile</b-dropdown-item>
+          <b-dropdown-item href="#">Sign Out</b-dropdown-item>
+        </b-nav-item-dropdown>
+      </b-navbar-nav>
+
+      <!-- <b-collapse id="nav-text-collapse" is-nav>
+        <b-navbar-nav>
+          <b-nav-text>Navbar text</b-nav-text>
+        </b-navbar-nav>
+      </b-collapse> -->
+    </b-navbar>
+        <!-- <home></home>
         <p>
           <router-link to="/" exact-path>Home</router-link>
           <router-link to="/add_publication" exact-path>Add New Publication</router-link>
-        </p>
+        </p> -->
         <router-view></router-view>
-      </div>
+      </b-container>
     </body>
     <script src="{{ mix('js/app.js') }}"></script>
 </html>

@@ -29,14 +29,24 @@ require('./bootstrap');
 
 import Vue from "vue";
 import VueRouter from 'vue-router'
+import BootstrapVue from "bootstrap-vue"
 import Home from "./components/App";
 import AddPublication from "./components/AddPublicationForm";
+import ShowPublication from "./components/ShowPublication";
+import EditPublication from "./components/EditPublicationForm";
 
-Vue.use(VueRouter)
+// import './../sass/app.scss';
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
+
+Vue.use(VueRouter);
+Vue.use(BootstrapVue);
 
 const routes = [
   { path: '/', component: Home },
-  { path: '/add_publication', component: AddPublication }
+  { path: '/add_publication', component: AddPublication },
+  { path: '/publication/:id/edit', component: EditPublication, name: 'EditPublication' },
+  { path: '/publication/:id', component: ShowPublication, name: 'ShowPublication' },
 ]
 
 const router = new VueRouter({
